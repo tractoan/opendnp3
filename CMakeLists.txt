@@ -39,7 +39,7 @@ include(./cmake/ClangTidy.cmake)
 if(WIN32)
     set(DNP3_STATIC_LIBS_BY_DEFAULT ON)
 else()
-    set(DNP3_STATIC_LIBS_BY_DEFAULT OFF)
+    set(DNP3_STATIC_LIBS_BY_DEFAULT ON)
 endif()
 
 # Compilation options
