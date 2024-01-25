@@ -25,6 +25,8 @@
 #include <opendnp3/master/DefaultMasterApplication.h>
 #include <opendnp3/master/PrintingCommandResultCallback.h>
 #include <opendnp3/master/PrintingSOEHandler.h>
+// #include <opendnp3/decoder/IDecoderCallbacks.h>
+// #include <sstream>
 
 using namespace std;
 using namespace opendnp3;
@@ -34,16 +36,28 @@ class TestSOEHandler : public ISOEHandler
     virtual void BeginFragment(const ResponseInfo& info){};
     virtual void EndFragment(const ResponseInfo& info){};
 
-    virtual void Process(const HeaderInfo& info, const ICollection<Indexed<Binary>>& values) {};
+    virtual void Process(const HeaderInfo& info, const ICollection<Indexed<Binary>>& values) {
+        std::cout << info.headerIndex << " ";
+        auto logItem = [this](const Indexed<Binary>& item) {
+            std::cout << item.index << " " << item.value.value?"1 ":"0 ";
+            std::cout << "\r\n";
+        };
+        // std::cout << "hahahahaha\r\n";
+        values.ForeachItem(logItem);
+    };
     virtual void Process(const HeaderInfo& info, const ICollection<Indexed<DoubleBitBinary>>& values) {};
     virtual void Process(const HeaderInfo& info, const ICollection<Indexed<Analog>>& values) {};
     virtual void Process(const HeaderInfo& info, const ICollection<Indexed<Counter>>& values) {};
     virtual void Process(const HeaderInfo& info, const ICollection<Indexed<FrozenCounter>>& values) {};
-    virtual void Process(const HeaderInfo& info, const ICollection<Indexed<BinaryOutputStatus>>& values) {};
+    virtual void Process(const HeaderInfo& info, const ICollection<Indexed<BinaryOutputStatus>>& values) {
+        std::cout << "binary output status" << std::endl;
+    };
     virtual void Process(const HeaderInfo& info, const ICollection<Indexed<AnalogOutputStatus>>& values) {};
     virtual void Process(const HeaderInfo& info, const ICollection<Indexed<OctetString>>& values) {};
     virtual void Process(const HeaderInfo& info, const ICollection<Indexed<TimeAndInterval>>& values) {};
-    virtual void Process(const HeaderInfo& info, const ICollection<Indexed<BinaryCommandEvent>>& values) {};
+    virtual void Process(const HeaderInfo& info, const ICollection<Indexed<BinaryCommandEvent>>& values) {
+        std::cout << "binary command event" << std::endl;
+    };
     virtual void Process(const HeaderInfo& info, const ICollection<Indexed<AnalogCommandEvent>>& values) {};    
     virtual void Process(const HeaderInfo& info, const ICollection<DNPTime>& values) {};
 };
@@ -58,7 +72,7 @@ int main(int argc, char* argv[])
     DNP3Manager manager(1, ConsoleLogger::Create());
 
     // Connect via a TCPClient socket to a outstation
-    auto channel = manager.AddTCPClient("tcpclient", logLevels, ChannelRetry::Default(), {IPEndpoint("127.0.0.1", 20000)},
+    auto channel = manager.AddTCPClient("tcpclient", logLevels, ChannelRetry::Default(), {IPEndpoint("192.168.2.220", 65000)},
                                         "0.0.0.0", PrintingChannelListener::Create());
 
     // The master config object for a master. The default are
@@ -87,10 +101,10 @@ int main(int argc, char* argv[])
     auto test_soe_handler = std::make_shared<TestSOEHandler>();
 
     // do an integrity poll (Class 3/2/1/0) once per minute
-    auto integrityScan = master->AddClassScan(ClassField::AllClasses(), TimeDuration::Minutes(1), test_soe_handler);
+    //auto integrityScan = master->AddClassScan(ClassField::AllClasses(), TimeDuration::Minutes(1), test_soe_handler);
 
     // do a Class 1 exception poll every 5 seconds
-    auto exceptionScan = master->AddClassScan(ClassField(ClassField::CLASS_1), TimeDuration::Seconds(5), test_soe_handler);
+    //auto exceptionScan = master->AddClassScan(ClassField(ClassField::CLASS_1), TimeDuration::Seconds(5), test_soe_handler);
 
     // Enable the master. This will start communications.
     master->Enable();
@@ -116,7 +130,7 @@ int main(int argc, char* argv[])
         switch (cmd)
         {
         case ('a'):
-            master->ScanRange(GroupVariationID(1, 2), 0, 3, test_soe_handler);
+            master->ScanRange(GroupVariationID(1, 2), 8, 13, test_soe_handler);
             break;
         case ('d'):
             master->PerformFunction("disable unsol", FunctionCode::DISABLE_UNSOLICITED,
@@ -141,15 +155,25 @@ int main(int argc, char* argv[])
             // C++ destructor on DNP3Manager cleans everything up for you
             return 0;
         case ('i'):
-            integrityScan->Demand();
+            //integrityScan->Demand();
             break;
         case ('e'):
-            exceptionScan->Demand();
+            //exceptionScan->Demand();
             break;
         case ('c'):
         {
             ControlRelayOutputBlock crob(OperationType::LATCH_ON);
-            master->SelectAndOperate(crob, 0, PrintingCommandResultCallback::Get());
+            master->SelectAndOperate(crob, 3, PrintingCommandResultCallback::Get());
+            ControlRelayOutputBlock crob1(OperationType::LATCH_ON);
+            master->SelectAndOperate(crob1, 1, PrintingCommandResultCallback::Get());
+            break;
+        }
+        case ('f'):
+        {
+            ControlRelayOutputBlock crob(OperationType::LATCH_OFF);
+            master->SelectAndOperate(crob, 3, PrintingCommandResultCallback::Get());
+            ControlRelayOutputBlock crob1(OperationType::LATCH_OFF);
+            master->SelectAndOperate(crob1, 1, PrintingCommandResultCallback::Get());
             break;
         }
         case ('t'):

@@ -165,6 +165,10 @@ public:
                        const CommandResultCallbackT& callback,
                        const TaskConfig& config) override;
 
+    void TimeSync(uint64_t timeMs,
+                       const TimeSyncResultCallback& callback,
+                       const TaskConfig& config) override;
+
 protected:
     std::shared_ptr<MContext> mcontext;
 };

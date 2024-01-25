@@ -33,6 +33,7 @@
 #include "opendnp3/master/CommandSet.h"
 #include "opendnp3/master/IMasterApplication.h"
 #include "opendnp3/master/RestartOperationResult.h"
+#include "master/TimeSyncTask.h"
 
 #include <ser4cpp/container/Buffer.h>
 
@@ -125,6 +126,8 @@ public:
     void DirectOperate(CommandSet&& commands, const CommandResultCallbackT& callback, const TaskConfig& config);
 
     void SelectAndOperate(CommandSet&& commands, const CommandResultCallbackT& callback, const TaskConfig& config);
+
+    void TimeSync(uint64_t timeMs, const TimeSyncResultCallback& callback);
 
     // -----  public methods used to add tasks -----
 

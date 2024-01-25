@@ -262,6 +262,18 @@ void MasterSessionStack::DirectOperate(CommandSet&& commands,
     executor->post(action);
 }
 
+void MasterSessionStack::TimeSync(uint64_t timeMs,
+                               const TimeSyncResultCallback& callback,
+                               const TaskConfig& config)
+{
+    // this is required b/c move capture not supported in C++11
+
+    auto action = [self = shared_from_this(), timeMs, config, callback]() -> void {
+        self->context->TimeSync(timeMs, callback);
+    };
+    executor->post(action);
+}
+
 StackStatistics MasterSessionStack::CreateStatistics() const
 {
     return StackStatistics(this->stack.link->GetStatistics(), this->stack.transport->GetStatistics());

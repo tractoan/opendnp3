@@ -21,6 +21,7 @@
 #define OPENDNP3_ICOMMANDPROCESSOR_H
 
 #include "opendnp3/master/CommandResultCallbackT.h"
+#include "opendnp3/master/TimeSyncResultCallbackT.h"
 #include "opendnp3/master/CommandSet.h"
 #include "opendnp3/master/TaskConfig.h"
 
@@ -54,6 +55,11 @@ public:
      */
     virtual void DirectOperate(CommandSet&& commands,
                                const CommandResultCallbackT& callback,
+                               const TaskConfig& config = TaskConfig::Default())
+        = 0;
+
+    virtual void TimeSync(uint64_t timeMs,
+                               const TimeSyncResultCallback& callback,
                                const TaskConfig& config = TaskConfig::Default())
         = 0;
 

@@ -210,7 +210,7 @@ void MasterStack::SelectAndOperate(CommandSet&& commands,
     auto set = std::make_shared<CommandSet>(std::move(commands));
 
     auto action = [self = this->shared_from_this(), set, config, callback]() {
-        self->mcontext->SelectAndOperate(std::move(*set), callback, config);
+        return self->mcontext->SelectAndOperate(std::move(*set), callback, config);
     };
 
     this->executor->post(action);
@@ -222,7 +222,17 @@ void MasterStack::DirectOperate(CommandSet&& commands, const CommandResultCallba
     auto set = std::make_shared<CommandSet>(std::move(commands));
 
     auto action = [self = this->shared_from_this(), set, config, callback]() {
-        self->mcontext->DirectOperate(std::move(*set), callback, config);
+        return self->mcontext->DirectOperate(std::move(*set), callback, config);
+    };
+
+    this->executor->post(action);
+}
+
+void MasterStack::TimeSync(uint64_t timeMs,const TimeSyncResultCallback& callback, const TaskConfig& config)
+{
+    /// this is to work around the fact that c++11 doesn't have generic move capture
+    auto action = [self = this->shared_from_this(), timeMs, config, callback]() {
+        return self->mcontext->TimeSync(timeMs, callback);
     };
 
     this->executor->post(action);

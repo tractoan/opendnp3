@@ -26,6 +26,7 @@
 #include "gen/objects/Group41.h"
 #include "logging/LogMacros.h"
 #include "master/CommandTask.h"
+#include "master/TimeSyncTask.h"
 #include "master/EmptyResponseTask.h"
 #include "master/MeasurementHandler.h"
 #include "master/RestartOperationTask.h"
@@ -196,6 +197,13 @@ void MContext::SelectAndOperate(CommandSet&& commands, const CommandResultCallba
     this->ScheduleAdhocTask(CommandTask::CreateSelectAndOperate(this->tasks.context, std::move(commands),
                                                                 this->params.controlQualifierMode, *application,
                                                                 callback, timeout, config, logger));
+}
+
+void MContext::TimeSync(uint64_t timeMs, const TimeSyncResultCallback& callback)
+{
+    const auto timeout = Timestamp(this->executor->get_time()) + params.taskStartTimeout;
+    this->ScheduleAdhocTask(TimeSyncTask::CreateTimeSync(this->tasks.context, *application,
+                                                                callback, timeout, timeMs, logger));
 }
 
 void MContext::ProcessAPDU(const APDUResponseHeader& header, const ser4cpp::rseq_t& objects)

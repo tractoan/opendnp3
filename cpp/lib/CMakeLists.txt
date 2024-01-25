@@ -111,6 +111,7 @@ set(opendnp3_public_headers
 
     ./include/opendnp3/master/CommandPointResult.h
     ./include/opendnp3/master/CommandResultCallbackT.h
+    ./include/opendnp3/master/TimeSyncResultCallbackT.h
     ./include/opendnp3/master/CommandSet.h
     ./include/opendnp3/master/DefaultListenCallbacks.h
     ./include/opendnp3/master/DefaultMasterApplication.h
@@ -314,6 +315,7 @@ set(opendnp3_private_headers
     ./src/master/ClearRestartTask.h
     ./src/master/CommandSetOps.h
     ./src/master/CommandTask.h
+    ./src/master/TimeSyncTask.h
     ./src/master/CommandTaskResult.h
     ./src/master/DisableUnsolicitedTask.h
     ./src/master/EmptyResponseTask.h
@@ -564,6 +566,7 @@ set(opendnp3_src
     ./src/master/CommandSet.cpp
     ./src/master/CommandSetOps.cpp
     ./src/master/CommandTask.cpp
+    ./src/master/TimeSyncTask.cpp
     ./src/master/CommandTaskResult.cpp
     ./src/master/DefaultListenCallbacks.cpp
     ./src/master/DefaultMasterApplication.cpp

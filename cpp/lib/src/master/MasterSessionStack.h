@@ -112,6 +112,10 @@ public:
                           const TaskConfig& config) final;
     void DirectOperate(CommandSet&& commands, const CommandResultCallbackT& callback, const TaskConfig& config) final;
 
+    void TimeSync(uint64_t timeMs,
+                               const TimeSyncResultCallback& callback,
+                               const TaskConfig& config) final;
+
     MasterSessionStack(const Logger& logger,
                        const std::shared_ptr<exe4cpp::StrandExecutor>& executor,
                        const std::shared_ptr<ISOEHandler>& SOEHandler,
