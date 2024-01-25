@@ -48,7 +48,7 @@ TimeSyncTask::TimeSyncTask(const std::shared_ptr<TaskContext>& context,
                             const Timestamp& startExpiration, 
                             uint64_t timeMs, 
                             Logger& logger)
-    : IMasterTask(context, app, TaskBehavior::SingleExecutionNoRetry(startExpiration), logger, TaskConfig::Default()), timeMs(timeMs)
+    : IMasterTask(context, app, TaskBehavior::SingleExecutionNoRetry(startExpiration), logger, TaskConfig::Default()), timeMs(timeMs), timeSyncCallback(std::move(callback))
 {
 }
 
